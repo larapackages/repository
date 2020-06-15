@@ -1,0 +1,24 @@
+{
+    "name": "larapackages/repository",
+    "type": "library",
+    "description": "Laravel Repository Pattern",
+    "require": {
+        "php": "^7.1.3",
+        "illuminate/database": "^5.8"
+    },
+    "require-dev": {
+        "codedungeon/phpunit-result-printer": "^0.26",
+        "phpunit/phpunit": "^8.4|^9.0",
+        "orchestra/testbench": "^3.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "Larapackages\\Repository\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Larapackages\\Tests\\": "tests/"
+        }
+    }
+}
