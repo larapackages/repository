@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
 use Larapackages\Repository\Eloquent\Repository;
 use Larapackages\Repository\Eloquent\Exceptions\PrimaryKeyRequiredException;
@@ -114,6 +115,7 @@ final class CacheById implements CacheStrategy
         } elseif (is_object($result)) {
             $model_key = $this->repository->getModel()->getModel()->getKeyName();
             if (
+                $result instanceof LazyCollection ||
                 $result instanceof EloquentCollection ||
                 $result instanceof AbstractPaginator
             ) {

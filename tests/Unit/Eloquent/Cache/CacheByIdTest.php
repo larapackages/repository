@@ -5,6 +5,7 @@ namespace Larapackages\Tests\Unit\Eloquent\Cache;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\LazyCollection;
 use Larapackages\Repository\Eloquent\Cache\CacheById;
 use Larapackages\Repository\Eloquent\Exceptions\PrimaryKeyRequiredException;
 use Larapackages\Tests\Models\User;
@@ -178,6 +179,48 @@ class CacheByIdTest extends TestCase
         );
         $cache_key = md5($cache_key);
         $this->assertSame($class, Cache::tags(['write-object'])->get($cache_key));
+    }
+
+    public function testWriteLazyCollectionWithoutKey()
+    {
+        $this->expectException(PrimaryKeyRequiredException::class);
+        $user = factory(User::class)->create();
+
+        $repository      = new UserRepository;
+        $cache_by_result = new CacheById($repository, 60, ['write-lazy-collection-without-key']);
+
+        $class = LazyCollection::make(function () use ($user) {
+            yield User::findOrFail($user->id, ['name']);
+        });
+        $cache_by_result->write('all', [], $class);
+    }
+
+    public function testWriteLazyCollectionWithKey()
+    {
+        $users = factory(User::class, 2)->create();
+
+        $repository      = new UserRepository;
+        $cache_by_result = new CacheById($repository, 60, ['write-lazy-collection-with-key']);
+
+        $class = LazyCollection::make(function () use ($users) {
+            foreach ([$users->first(), $users->last()] as $user) {
+                yield $user;
+            };
+        });
+        $cache_by_result->write('all', [], $class);
+
+        $cache_key = sprintf(
+            'id:%s($s):%s_%s',
+            'all',
+            json_encode([]),
+            $repository->getModel()->toSql(),
+            json_encode($repository->getModel()->getBindings())
+        );
+        $cache_key = md5($cache_key);
+        $this->assertSame(
+            sprintf('pks:%d,%d', $users->first()->id, $users->last()->id),
+            Cache::tags(['write-lazy-collection-with-key'])->get($cache_key)
+        );
     }
 
     public function testWriteCollectionWithoutKey()

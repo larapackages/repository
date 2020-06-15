@@ -8,6 +8,7 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
 use Larapackages\Repository\Query\Repository;
 
@@ -111,6 +112,7 @@ final class CacheById implements CacheStrategy
         } elseif (is_object($result)) {
             $model_key = $this->repository->base_model->getKeyName();
             if (
+                $result instanceof LazyCollection ||
                 $result instanceof Collection ||
                 $result instanceof AbstractPaginator
             ) {
