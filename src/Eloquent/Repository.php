@@ -56,6 +56,7 @@ abstract class Repository
         'sum',
         'update',
         'updateOrCreate',
+        'latest',
     ];
 
     /**
