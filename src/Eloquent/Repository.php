@@ -141,26 +141,9 @@ abstract class Repository
      */
     public function filterByKey($value, string $operator = '=')
     {
-        $key_name = $this->model->getModel()->getKeyName();
+        $column = $this->model->getModel()->getKeyName();
 
-        if (!is_array($value) && !$value instanceof Arrayable) {
-            $this->model = $this->model->where($key_name, $operator, $value);
-
-            return $this;
-        }
-
-        if (!in_array($operator, ['=', '!='])) {
-            throw new InvalidOperatorException($operator);
-        }
-
-        $this->model = $this->model->whereIn(
-            $key_name,
-            $value,
-            'and',
-            $operator === '!='
-        );
-
-        return $this;
+        return $this->applyCommonFilter($column, $value, $operator);
     }
 
     /**
@@ -345,6 +328,35 @@ abstract class Repository
         }
 
         $this->model = call_user_func_array([$this->model, $method], $args);
+
+        return $this;
+    }
+
+    /**
+     * @param        $column
+     * @param        $value
+     * @param string $operator
+     *
+     * @return $this
+     */
+    protected function applyCommonFilter($column, $value, $operator = '=')
+    {
+        if (!is_array($value) && !$value instanceof Arrayable) {
+            $this->model = $this->model->where($column, $operator, $value);
+
+            return $this;
+        }
+
+        if (!in_array($operator, ['=', '!='])) {
+            throw new InvalidOperatorException($operator);
+        }
+
+        $this->model = $this->model->whereIn(
+            $column,
+            $value,
+            'and',
+            $operator === '!='
+        );
 
         return $this;
     }
