@@ -65,6 +65,7 @@ abstract class Repository
     private $eloquent_availables = [
         'distinct',
         'forPage',
+        'orderBy',
         'groupBy',
         'has',
         'limit',
