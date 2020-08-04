@@ -60,6 +60,7 @@ abstract class Repository
         'distinct',
         'forPage',
         'groupBy',
+        'orderBy',
         'limit',
         'select',
         'skip',
