@@ -77,6 +77,8 @@ abstract class Repository
         'whereNull',
         'with',
         'withCount',
+        'withTrashed',
+        'withoutTrashed',
     ];
 
     /**
