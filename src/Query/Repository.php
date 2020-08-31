@@ -28,6 +28,7 @@ use Larapackages\Repository\Query\Exceptions\MethodNotFoundException;
  * Class Repository
  *
  * @mixin QueryBuilder
+ * @method \Illuminate\Database\Eloquent\Collection get(string|array $columns = ['*'])
  */
 abstract class Repository
 {
@@ -35,7 +36,6 @@ abstract class Repository
      * @var array
      */
     protected $query_getters = [
-        'all',
         'avg',
         'cursor',
         'delete',
@@ -73,9 +73,7 @@ abstract class Repository
      * @var array
      */
     protected $eloquent_getters_hydrate = [
-        'all',
         'first',
-        'forPage',
         'get',
         'paginate',
         'simplePaginate',
