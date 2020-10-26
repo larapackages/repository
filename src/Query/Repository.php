@@ -892,7 +892,7 @@ abstract class Repository
                 ->transform(function ($columns) use ($search) {
                     $columns = (array) $columns;
                     foreach ($columns as $column => $value) {
-                        if (!starts_with($column, $search)) {
+                        if (!Str::startsWith($column, $search)) {
                             unset($columns[$column]);
                         }
                     }
@@ -935,7 +935,7 @@ abstract class Repository
         }
 
         return collect($this->joins)->filter(function ($join) use ($model_hydrate) {
-            return starts_with($join, $model_hydrate . '->');
+            return Str::startsWith($join, $model_hydrate . '->');
         })->mapWithKeys(function ($join) use ($query, $args, $hydrated_models, $result, $model_hydrate) {
             $join = last(explode('->', $join));
 
