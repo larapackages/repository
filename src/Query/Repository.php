@@ -4,6 +4,7 @@ namespace Larapackages\Repository\Query;
 
 use Closure;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,9 +13,9 @@ use Illuminate\Database\Query\JoinClause;
 use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\LazyCollection;
 use Illuminate\Support\Str;
 use Larapackages\Repository\Query\Cache\CacheById;
 use Larapackages\Repository\Query\Cache\CacheByResult;
@@ -694,6 +695,25 @@ abstract class Repository
      * @return string
      */
     abstract protected function baseModel(): string;
+
+    /**
+     * Get a lazy collection for the given query.
+     *
+     * @return LazyCollection
+     */
+    public function cursor(): LazyCollection
+    {
+        //Get the model to hydrate
+        $model_hydrate = get_class($this->base_model);
+        $model = with(new $model_hydrate);
+
+        $this->filterByNotDeleted($this->query);
+        $this->query->groupBy($this->column($model->getKeyName(), $model_hydrate));
+
+        $this->query->select($this->column('*', $model_hydrate));
+
+        return $this->query->cursor();
+    }
 
     /**
      * Call eloquent getter and return the model.
