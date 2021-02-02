@@ -354,12 +354,20 @@ abstract class Repository
             throw new InvalidOperatorException($operator);
         }
 
-        $this->model = $this->model->whereIn(
-            $column,
-            $value,
-            'and',
-            $operator === '!='
-        );
+        $this->model = $this->model->where(function(EloquentBuilder $query) use ($column, $value, $operator) {
+            if (($key = array_search(null, $value)) !== false) {
+                unset($value[$key]);
+
+                $query->orWhereNull($column);
+            }
+
+            $query->orWhereIn(
+                $column,
+                $value,
+                'and',
+                $operator === '!='
+            );
+        });
 
         return $this;
     }
