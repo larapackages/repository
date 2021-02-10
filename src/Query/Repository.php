@@ -718,7 +718,9 @@ abstract class Repository
         $this->filterByNotDeleted($this->query);
         $this->query->groupBy($this->column($model->getKeyName(), $model_hydrate));
 
-        $this->query->select($this->column('*', $model_hydrate));
+        if (empty($this->query->columns)) {
+            $this->query->select($this->column('*', $model_hydrate));
+        }
 
         return $this->query->cursor();
     }
