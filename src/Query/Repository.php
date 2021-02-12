@@ -682,6 +682,8 @@ abstract class Repository
         }
 
         $this->query = $this->query->where(function(QueryBuilder $query) use ($column, $value, $operator) {
+            $value = $value instanceof Arrayable ? $value->toArray() : $value;
+
             if (($key = array_search(null, $value)) !== false) {
                 unset($value[$key]);
 
